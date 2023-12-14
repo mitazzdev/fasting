@@ -63,11 +63,23 @@ class _MyHomePageState extends State<MyHomePage> {
   List userLists = [];
   DatabaseHelper _databaseHelper = DatabaseHelper.instance;
   late User user;
+  late int nextRamdan;
 
   TextEditingController txt = TextEditingController();
   TextEditingController nameCtrl = TextEditingController();
   TextEditingController misseDayCtrl = TextEditingController();
   TextEditingController makeupDayCtrl = TextEditingController();
+
+  int calNextRamdan() {
+    DateTime today = DateTime.now();
+    DateTime nextRamdan = DateTime(2024, 3, 10);
+
+    Duration difference = nextRamdan.difference(today);
+    int daysDifference = difference.inDays;
+
+    print('Days between today and March 10, 2024: $daysDifference days');
+    return daysDifference;
+  }
 
   void _incrementUser() async {
     await showDialog(
@@ -108,6 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    nextRamdan = calNextRamdan();
     _loadUsers();
   }
 
@@ -243,10 +256,23 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Container(
+                decoration:
+                    BoxDecoration(color: Color.fromARGB(255, 243, 225, 173)),
+                width: double.infinity,
+                height: 150,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Ramdan is coming in $nextRamdan days',
+                    style: TextStyle(fontSize: 25),
+                  ),
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
-                  height: 600,
+                  height: 400,
                   decoration: BoxDecoration(
                       color: Color.fromARGB(255, 245, 224, 148),
                       borderRadius: BorderRadius.circular(10)),
