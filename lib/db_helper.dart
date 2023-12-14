@@ -83,4 +83,9 @@ class DatabaseHelper {
     await deleteDatabase(path);
     _database = null; // Set _database to null after deletion
   }
+
+  Future<int> deleteAllUsers() async {
+    Database db = await instance.database;
+    return await db.delete(tableName); // tableName is the name of your table
+  }
 }

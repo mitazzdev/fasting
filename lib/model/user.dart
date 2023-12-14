@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
 class User {
+  final int id;
   String name;
   int missedFast;
   int makeupDay;
 
   User({
+    required this.id,
     required this.name,
     required this.missedFast,
     required this.makeupDay,
@@ -14,6 +16,7 @@ class User {
   // Factory constructor to create a User object from a Map
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
+      id: map['id'],
       name: map['name'],
       missedFast: map['missedDay'],
       makeupDay: map['makeupDay'],

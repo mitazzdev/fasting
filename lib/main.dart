@@ -73,30 +73,15 @@ class _MyHomePageState extends State<MyHomePage> {
     await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Add new user'),
-          content: Column(
-            children: [
-              ctTextField(label: 'Name', nameCtrl: nameCtrl),
-              ctTextField(label: 'Missed Day', nameCtrl: misseDayCtrl),
-              ctTextField(label: 'Make up day', nameCtrl: makeupDayCtrl),
-            ],
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('Save'),
-            ),
-          ],
-        );
+        return ctAlertDialog(
+            nameCtrl: nameCtrl,
+            misseDayCtrl: misseDayCtrl,
+            makeupDayCtrl: makeupDayCtrl);
       },
     );
     setState(() {
       user = User(
+          id: 0,
           name: nameCtrl.text,
           makeupDay: int.parse(makeupDayCtrl.text),
           missedFast: int.parse(misseDayCtrl.text));
@@ -135,23 +120,10 @@ class _MyHomePageState extends State<MyHomePage> {
     await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Edit Card List'),
-          content: ctTextField(
-            label: 'Name',
+        return ctAlertDialog(
             nameCtrl: nameCtrl,
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('Save'),
-            ),
-          ],
-        );
+            misseDayCtrl: misseDayCtrl,
+            makeupDayCtrl: makeupDayCtrl);
       },
     );
 
@@ -164,10 +136,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Delete functionality
   void _deleteCardList(int index) async {
-    int id = index + 1; // Assuming the id is the index + 1 (adjust as needed)
-    print(id);
-    await _databaseHelper.deleteUser(id);
+    User userToDelete = userLists[index]; // Get the User object from the list
+    int userId = userToDelete.id; // Get the actual ID from the User object
+    print(userId);
+
+    await _databaseHelper.deleteUser(userId);
     _loadUsers();
+  }
+
+  Future<void> _deleteAllData() async {
+    await _databaseHelper.deleteAllUsers();
   }
 
   @override
@@ -190,18 +168,27 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              TextField(
-                controller: txt,
-              ),
+              Text('hey '),
               Container(
                 height: 600,
+                decoration: BoxDecoration(color: Colors.amber),
                 child: ListView.builder(
                   itemCount: userLists.length,
                   itemBuilder: (BuildContext context, int index) {
+                    print(userLists.length);
                     User currentUser = userLists[index];
+                    int makeupDay = currentUser.makeupDay;
+                    int missedDay = currentUser.missedFast;
+                    double makeupPercent = makeupDay / missedDay * 100;
                     return Card(
                       child: ListTile(
                         title: Text(currentUser.name),
+                        subtitle: LinearProgressIndicator(
+                          value: makeupPercent,
+                          semanticsLabel: 'Linear progress indicator',
+                        ),
+                        leading: CircleAvatar(
+                            child: Text('${missedDay - makeupDay}')),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -219,7 +206,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     );
                   },
                 ),
-              )
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      // Call this method when you want to delete all data
+                      _deleteAllData();
+                      print('deleted all');
+                    });
+                  },
+                  child: Text('delete all'))
             ],
           ),
         ),
@@ -229,6 +225,43 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
+    );
+  }
+}
+
+class ctAlertDialog extends StatelessWidget {
+  const ctAlertDialog({
+    super.key,
+    required this.nameCtrl,
+    required this.misseDayCtrl,
+    required this.makeupDayCtrl,
+  });
+
+  final TextEditingController nameCtrl;
+  final TextEditingController misseDayCtrl;
+  final TextEditingController makeupDayCtrl;
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Add new user'),
+      content: Column(
+        children: [
+          ctTextField(label: 'Name', nameCtrl: nameCtrl),
+          ctTextField(label: 'Missed Day', nameCtrl: misseDayCtrl),
+          ctTextField(label: 'Make up day', nameCtrl: makeupDayCtrl),
+        ],
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text('Save'),
+        ),
+      ],
     );
   }
 }
