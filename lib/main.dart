@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 import 'db_helper.dart';
 import 'model/user.dart';
@@ -28,7 +29,7 @@ class _MyAppState extends State<MyApp> {
               : ColorScheme.fromSeed(
                   seedColor: color, brightness: Brightness.light)),
       home: MyHomePage(
-        title: 'Fasing Tracking',
+        title: 'Fasting Tracking',
         isDark: isDark,
         toggleTheme: () {
           // Use setState to trigger a rebuild when the theme changes
@@ -180,21 +181,46 @@ class _MyHomePageState extends State<MyHomePage> {
     _loadUsers();
   }
 
+  Future<void> _updateMakeUpDay(int index, int makeupDay) async {
+    User existingUser = userLists[index];
+    User updatedUser = User(
+        id: existingUser.id,
+        name: existingUser.name,
+        missedFast: existingUser.missedFast,
+        makeupDay: makeupDay);
+    await _databaseHelper.updateUser(updatedUser.id, updatedUser);
+    _loadUsers();
+  }
+
   Future<void> _deleteAllData() async {
     await _databaseHelper.deleteAllUsers();
     _loadUsers();
   }
 
-  Future<bool> _confirmDelete(BuildContext context) async {
-    // You can show a confirmation dialog here
-    // Return true if the user confirms, false otherwise
-    return true;
-  }
+  Future<void> _confirmDelete(BuildContext context, int index) async {
+    bool confirm = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Delete'),
+          content: Text('Are you sure you want to delete this item?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
 
-  Future<bool> _confirmEdit(BuildContext context, int index) async {
-    // You can show an edit dialog here
-    // Return true if the user confirms, false otherwise
-    return true;
+    if (confirm == true) {
+      _deleteCardList(index);
+    }
   }
 
   @override
@@ -222,7 +248,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Container(
                   height: 600,
                   decoration: BoxDecoration(
-                      color: Colors.amberAccent,
+                      color: Color.fromARGB(255, 245, 224, 148),
                       borderRadius: BorderRadius.circular(10)),
                   child: ListView.builder(
                     itemCount: userLists.length,
@@ -230,59 +256,95 @@ class _MyHomePageState extends State<MyHomePage> {
                       User currentUser = userLists[index];
                       int makeupDay = currentUser.makeupDay;
                       int missedDay = currentUser.missedFast;
-                      double makeupPercent =
-                          makeupDay / (missedDay + makeupDay);
-                      return Dismissible(
+                      double makeupPercent = makeupDay / missedDay;
+                      return Slidable(
                         key: Key(currentUser.id.toString()),
-                        background: Container(
-                          color: Colors.red,
-                          alignment: Alignment.centerRight,
-                          padding: EdgeInsets.only(right: 20.0),
-                          child: Icon(Icons.delete, color: Colors.white),
-                        ),
-                        secondaryBackground: Container(
-                          color: Colors.blue,
-                          alignment: Alignment.centerLeft,
-                          padding: EdgeInsets.only(left: 20.0),
-                          child: Icon(Icons.edit, color: Colors.white),
-                        ),
-                        confirmDismiss: (direction) async {
-                          return false; // Return false to prevent automatic dismissal
-                        },
+                        actionPane: SlidableDrawerActionPane(),
+                        actionExtentRatio: 0.25,
                         child: Card(
                           child: ListTile(
+                            contentPadding: EdgeInsets.all(8),
                             title: Text(currentUser.name),
-                            subtitle: LinearProgressIndicator(
-                              value: makeupPercent,
-                              semanticsLabel: 'Linear progress indicator',
+                            subtitle: Row(
+                              children: [
+                                Expanded(
+                                  child: LinearProgressIndicator(
+                                    minHeight: 10,
+                                    borderRadius: BorderRadius.circular(10),
+                                    value: makeupPercent,
+                                    semanticsLabel: 'Linear progress indicator',
+                                  ),
+                                ),
+                                SizedBox(
+                                    width: 60,
+                                    child: Center(
+                                        child: Text('$makeupDay/$missedDay'))),
+                              ],
                             ),
-                            leading: CircleAvatar(
-                                child: Text('$makeupDay/$missedDay')),
+                            leading: SizedBox(
+                              width: 70,
+                              child: FittedBox(
+                                child: CircleAvatar(
+                                  child: Text('${missedDay - makeupDay}'),
+                                  // minRadius: 1,
+                                ),
+                              ),
+                            ),
+                            trailing: SizedBox(
+                              width: 100,
+                              child: Row(children: [
+                                IconButton(
+                                    onPressed: () {
+                                      print('decreased');
+                                      setState(() {
+                                        makeupDay--;
+                                        _updateMakeUpDay(index, makeupDay);
+                                        print(makeupDay);
+                                      });
+                                    },
+                                    icon: Icon(Icons.remove)),
+                                IconButton(
+                                    onPressed: () {
+                                      print('increased');
+                                      setState(() {
+                                        makeupDay++;
+                                        _updateMakeUpDay(index, makeupDay);
+                                        print(makeupDay);
+                                      });
+                                    },
+                                    icon: Icon(Icons.add)),
+                              ]),
+                            ),
                           ),
                         ),
-                        onDismissed: (direction) async {
-                          if (direction == DismissDirection.startToEnd) {
-                            // Handle edit action
-                            await _confirmEdit(context, index);
-                          } else if (direction == DismissDirection.endToStart) {
-                            // Handle delete action
-                            await _confirmDelete(context);
-                          }
-                        },
+                        secondaryActions: [
+                          IconSlideAction(
+                            caption: 'Delete',
+                            color: Colors.red,
+                            icon: Icons.delete,
+                            onTap: () => _confirmDelete(context, index),
+                          ),
+                          IconSlideAction(
+                            caption: 'Edit',
+                            color: Colors.blue,
+                            icon: Icons.edit,
+                            onTap: () => _editCardList(index),
+                          ),
+                        ],
                       );
                     },
                   ),
                 ),
               ),
-              ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      // Call this method when you want to delete all data
-                      _deleteAllData();
-                      print('deleted all');
-                    });
-                  },
-                  child: Text('delete all'))
+              // ElevatedButton(
+              //     onPressed: () {
+              //       setState(() {
+              //         // Call this method when you want to delete all data
+              //         _deleteAllData();
+              //         print('deleted all');
+              //       });
+              //     },
+              //     child: Text('delete all'))
             ],
           ),
         ),
@@ -315,7 +377,11 @@ class ctAlertDialog extends StatelessWidget {
       content: SingleChildScrollView(
         child: Column(
           children: [
-            ctTextField(label: 'Name', nameCtrl: nameCtrl),
+            ctTextField(
+              label: 'Name',
+              nameCtrl: nameCtrl,
+              isNumber: false,
+            ),
             ctTextField(label: 'Missed Day', nameCtrl: misseDayCtrl),
             ctTextField(label: 'Make up day', nameCtrl: makeupDayCtrl),
           ],
@@ -336,21 +402,23 @@ class ctAlertDialog extends StatelessWidget {
 }
 
 class ctTextField extends StatelessWidget {
-  const ctTextField({
+  ctTextField({
     super.key,
     required this.nameCtrl,
     required this.label,
+    this.isNumber = true,
   });
 
   final TextEditingController nameCtrl;
   final String label;
+  bool isNumber = true;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextField(
-        keyboardType: TextInputType.number,
+        keyboardType: isNumber ? TextInputType.number : TextInputType.name,
         decoration: InputDecoration(
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
