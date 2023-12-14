@@ -29,7 +29,7 @@ class _MyAppState extends State<MyApp> {
               : ColorScheme.fromSeed(
                   seedColor: color, brightness: Brightness.light)),
       home: MyHomePage(
-        title: 'Fasting Tracking',
+        title: 'Fasting Tracker',
         isDark: isDark,
         toggleTheme: () {
           // Use setState to trigger a rebuild when the theme changes
@@ -260,19 +260,36 @@ class _MyHomePageState extends State<MyHomePage> {
                 decoration:
                     BoxDecoration(color: Color.fromARGB(255, 243, 225, 173)),
                 width: double.infinity,
-                height: 150,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    'Ramdan is coming in $nextRamdan days',
-                    style: TextStyle(fontSize: 25),
+                child: Card(
+                  color: Color.fromARGB(255, 174, 72, 72),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Ramdan is coming in ',
+                          style: TextStyle(
+                            fontSize: 25,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Text(
+                          '$nextRamdan days',
+                          style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
-                  height: 400,
+                  height: 500,
                   decoration: BoxDecoration(
                       color: Color.fromARGB(255, 245, 224, 148),
                       borderRadius: BorderRadius.circular(10)),
