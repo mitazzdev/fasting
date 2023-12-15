@@ -43,11 +43,33 @@ class ctAlertDialog extends StatelessWidget {
         TextButton(
           onPressed: () {
             if (_formKey.currentState!.validate()) {
-              // All validation checks passed, save the data
-              // Add your save logic here
+              // Validation checks passed, now perform additional checks
+              int missedDays = int.parse(misseDayCtrl.text);
+              int makeupDays = int.parse(makeupDayCtrl.text);
 
-              // Close the dialog
-              Navigator.of(context).pop();
+              if (makeupDays > missedDays) {
+                // Show an error message or handle the error as needed
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Validation Error'),
+                    content:
+                        Text('Makeup days cannot be greater than missed days.'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: Text('OK'),
+                      ),
+                    ],
+                  ),
+                );
+              } else {
+                // All checks passed, save the data
+                // Add your save logic here
+
+                // Close the dialog
+                Navigator.of(context).pop();
+              }
             }
           },
           child: Text('Save'),
