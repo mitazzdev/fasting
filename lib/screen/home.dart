@@ -227,7 +227,7 @@ class _MyHomePageState extends State<MyHomePage> {
               SizedBox(
                 width: double.infinity,
                 child: Card(
-                  color: Color.fromARGB(255, 187, 179, 113),
+                  color: Color.fromARGB(255, 113, 154, 187),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -258,7 +258,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Container(
                   height: 500,
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 245, 224, 148),
+                    color: Color.fromARGB(255, 163, 215, 224),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: ReorderableListView.builder(

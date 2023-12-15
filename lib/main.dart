@@ -15,7 +15,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool isDark = false; // Move isDark into the state
-  MaterialColor color = Colors.lime;
+  MaterialColor color = Colors.blue;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
