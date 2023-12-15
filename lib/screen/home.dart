@@ -384,6 +384,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                     width: 70,
                                     child: FittedBox(
                                       child: CircleAvatar(
+                                        backgroundColor: makeupDay == 0
+                                            ? Color.fromARGB(255, 238, 172, 167)
+                                            : null,
                                         child: Text('${missedDay - makeupDay}'),
                                         // minRadius: 1,
                                       ),
