@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../utils/db_helper.dart';
 import '../model/user.dart';
@@ -232,7 +233,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Column(
                       children: [
                         Text(
-                          'Ramadan is coming in ',
+                          'Countdown to Ramadan: ',
                           style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.w400,
@@ -343,14 +344,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                           icon: Icon(Icons.remove),
                                         ),
                                         IconButton(
-                                          onPressed: () {
-                                            print('increased');
-                                            setState(() {
-                                              _updateMakeUpDay(
-                                                  index, makeupDay);
-                                              print(makeupDay);
-                                            });
-                                          },
+                                          onPressed: () {},
                                           icon: Icon(Icons.add),
                                         ),
                                       ],
@@ -420,27 +414,22 @@ class _MyHomePageState extends State<MyHomePage> {
                                               print(makeupDay);
 
                                               // Check if makeupDay reaches a certain condition
-                                              if (makeupDay == 10) {
-                                                // If the condition is met, show the congratulations dialog
-                                                showDialog(
-                                                  context: context,
-                                                  builder: (context) =>
-                                                      AlertDialog(
-                                                    title:
-                                                        Text('Congratulations'),
-                                                    content: Text(
-                                                        'You have successfully completed the task!'),
-                                                    actions: <Widget>[
-                                                      TextButton(
-                                                        onPressed: () =>
-                                                            Navigator.of(
-                                                                    context)
-                                                                .pop(),
-                                                        child: Text('OK'),
-                                                      ),
-                                                    ],
-                                                  ),
+                                              if (makeupDay == missedDay) {
+                                                Fluttertoast.showToast(
+                                                  msg:
+                                                      'Congratulations ${currentUser.name} 🥳  \nYou have successfully completed the task!',
+                                                  toastLength:
+                                                      Toast.LENGTH_LONG,
+                                                  gravity: ToastGravity.BOTTOM,
+                                                  timeInSecForIosWeb: 1,
+                                                  backgroundColor: Colors.green,
+                                                  textColor: Colors.white,
+                                                  fontSize: 16.0,
+                                                  webShowClose: true,
+                                                  webBgColor: "#e74c3c",
+                                                  webPosition: "right",
                                                 );
+                                                print('After showToast');
                                               }
                                             });
                                           },
