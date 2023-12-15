@@ -3,7 +3,7 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'model/user.dart';
+import '../model/user.dart';
 
 class DatabaseHelper {
   static Database? _database;

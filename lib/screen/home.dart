@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-import '../db_helper.dart';
+import '../utils/db_helper.dart';
 import '../model/user.dart';
-import '../utils/custom.dart';
+import '../utils/widgets/custom.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage(
@@ -218,33 +218,28 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Container(
-                decoration:
-                    BoxDecoration(color: Color.fromARGB(255, 243, 225, 173)),
-                width: double.infinity,
-                child: Card(
-                  color: Color.fromARGB(255, 174, 72, 72),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Text(
-                          'Ramadan is coming in ',
-                          style: TextStyle(
+              Card(
+                color: Color.fromARGB(255, 174, 72, 72),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Ramadan is coming in ',
+                        style: TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        '$nextRamdan days',
+                        style: TextStyle(
                             fontSize: 25,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white,
-                          ),
-                        ),
-                        Text(
-                          '$nextRamdan days',
-                          style: TextStyle(
-                              fontSize: 25,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white),
-                        ),
-                      ],
-                    ),
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white),
+                      ),
+                    ],
                   ),
                 ),
               ),
