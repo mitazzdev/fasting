@@ -14,19 +14,25 @@ class ctAlertDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final _formKey = GlobalKey<FormState>(); // Create a GlobalKey
+
     return AlertDialog(
       title: Text('Add new user'),
       content: SingleChildScrollView(
-        child: Column(
-          children: [
-            ctTextFormField(
-              label: 'ชื่อ',
-              nameCtrl: nameCtrl,
-              isNumber: false,
-            ),
-            ctTextFormField(label: 'จำนวนวันที่ขาด', nameCtrl: misseDayCtrl),
-            ctTextFormField(label: 'จำนวนวันที่ชดใช้', nameCtrl: makeupDayCtrl),
-          ],
+        child: Form(
+          key: _formKey, // Assign the GlobalKey to the Form
+          child: Column(
+            children: [
+              ctTextFormField(
+                label: 'ชื่อ',
+                nameCtrl: nameCtrl,
+                isNumber: false,
+              ),
+              ctTextFormField(label: 'จำนวนวันที่ขาด', nameCtrl: misseDayCtrl),
+              ctTextFormField(
+                  label: 'จำนวนวันที่ชดใช้', nameCtrl: makeupDayCtrl),
+            ],
+          ),
         ),
       ),
       actions: <Widget>[
@@ -35,7 +41,15 @@ class ctAlertDialog extends StatelessWidget {
           child: Text('Cancel'),
         ),
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              // All validation checks passed, save the data
+              // Add your save logic here
+
+              // Close the dialog
+              Navigator.of(context).pop();
+            }
+          },
           child: Text('Save'),
         ),
       ],
@@ -44,23 +58,23 @@ class ctAlertDialog extends StatelessWidget {
 }
 
 class ctTextFormField extends StatelessWidget {
-  ctTextFormField({
-    super.key,
+  const ctTextFormField({
+    Key? key,
     required this.nameCtrl,
     required this.label,
     this.isNumber = true,
-  });
+  }) : super(key: key);
 
   final TextEditingController nameCtrl;
   final String label;
-  bool isNumber = true;
+  final bool isNumber;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextFormField(
-        keyboardType: isNumber ? TextInputType.number : TextInputType.name,
+        keyboardType: isNumber ? TextInputType.number : TextInputType.text,
         decoration: InputDecoration(
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
@@ -68,6 +82,12 @@ class ctTextFormField extends StatelessWidget {
           labelText: label,
         ),
         controller: nameCtrl,
+        validator: (value) {
+          if (value!.isEmpty) {
+            return 'Please enter a value';
+          }
+          return null;
+        },
       ),
     );
   }
