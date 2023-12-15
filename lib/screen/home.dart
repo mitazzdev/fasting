@@ -6,11 +6,12 @@ import '../model/user.dart';
 import '../utils/widgets/custom.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage(
-      {super.key,
-      required this.title,
-      required this.isDark,
-      required this.toggleTheme});
+  const MyHomePage({
+    super.key,
+    required this.title,
+    required this.isDark,
+    required this.toggleTheme,
+  });
 
   final String title;
   final bool isDark;
@@ -21,9 +22,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List userLists = [];
+  List<User> userLists = [];
   DatabaseHelper _databaseHelper = DatabaseHelper.instance;
-  late int nextRamdan;
+  late int nextRamadan;
 
   TextEditingController txt = TextEditingController();
   TextEditingController nameCtrl = TextEditingController();
@@ -80,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    nextRamdan = calNextRamdan();
+    nextRamadan = calNextRamdan();
     _loadUsers();
   }
 
@@ -98,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-// Edit functionality
+  // Edit functionality
   void _editUser(int index) async {
     // Get the existing user object from the list
     User existingUser = userLists[index];
@@ -157,10 +158,11 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _updateMakeUpDay(int index, int makeupDay) async {
     User existingUser = userLists[index];
     User updatedUser = User(
-        id: existingUser.id,
-        name: existingUser.name,
-        missedFast: existingUser.missedFast,
-        makeupDay: makeupDay);
+      id: existingUser.id,
+      name: existingUser.name,
+      missedFast: existingUser.missedFast,
+      makeupDay: makeupDay,
+    );
     await _databaseHelper.updateUser(updatedUser.id, updatedUser);
     _loadUsers();
   }
@@ -233,11 +235,12 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                         ),
                         Text(
-                          '$nextRamdan days',
+                          '$nextRamadan days',
                           style: TextStyle(
-                              fontSize: 25,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white),
+                            fontSize: 25,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
                         ),
                       ],
                     ),
@@ -249,10 +252,20 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Container(
                   height: 500,
                   decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 245, 224, 148),
-                      borderRadius: BorderRadius.circular(10)),
-                  child: ListView.builder(
+                    color: Color.fromARGB(255, 245, 224, 148),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: ReorderableListView.builder(
                     itemCount: userLists.length,
+                    onReorder: (int oldIndex, int newIndex) {
+                      setState(() {
+                        if (oldIndex < newIndex) {
+                          newIndex -= 1;
+                        }
+                        final User item = userLists.removeAt(oldIndex);
+                        userLists.insert(newIndex, item);
+                      });
+                    },
                     itemBuilder: (BuildContext context, int index) {
                       User currentUser = userLists[index];
                       int makeupDay = currentUser.makeupDay;
@@ -278,9 +291,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                   ),
                                 ),
                                 SizedBox(
-                                    width: 60,
-                                    child: Center(
-                                        child: Text('$makeupDay/$missedDay'))),
+                                  width: 60,
+                                  child: Center(
+                                    child: Text('$makeupDay/$missedDay'),
+                                  ),
+                                ),
                               ],
                             ),
                             leading: SizedBox(
@@ -294,8 +309,9 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                             trailing: SizedBox(
                               width: 100,
-                              child: Row(children: [
-                                IconButton(
+                              child: Row(
+                                children: [
+                                  IconButton(
                                     onPressed: () {
                                       print('decreased');
                                       setState(() {
@@ -304,8 +320,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                         print(makeupDay);
                                       });
                                     },
-                                    icon: Icon(Icons.remove)),
-                                IconButton(
+                                    icon: Icon(Icons.remove),
+                                  ),
+                                  IconButton(
                                     onPressed: () {
                                       print('increased');
                                       setState(() {
@@ -314,8 +331,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                         print(makeupDay);
                                       });
                                     },
-                                    icon: Icon(Icons.add)),
-                              ]),
+                                    icon: Icon(Icons.add),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
