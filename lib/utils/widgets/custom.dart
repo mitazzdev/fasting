@@ -19,13 +19,13 @@ class ctAlertDialog extends StatelessWidget {
       content: SingleChildScrollView(
         child: Column(
           children: [
-            ctTextField(
-              label: 'Name',
+            ctTextFormField(
+              label: 'ชื่อ',
               nameCtrl: nameCtrl,
               isNumber: false,
             ),
-            ctTextField(label: 'Missed Day', nameCtrl: misseDayCtrl),
-            ctTextField(label: 'Make up day', nameCtrl: makeupDayCtrl),
+            ctTextFormField(label: 'จำนวนวันที่ขาด', nameCtrl: misseDayCtrl),
+            ctTextFormField(label: 'จำนวนวันที่ชดใช้', nameCtrl: makeupDayCtrl),
           ],
         ),
       ),
@@ -43,8 +43,8 @@ class ctAlertDialog extends StatelessWidget {
   }
 }
 
-class ctTextField extends StatelessWidget {
-  ctTextField({
+class ctTextFormField extends StatelessWidget {
+  ctTextFormField({
     super.key,
     required this.nameCtrl,
     required this.label,
@@ -59,7 +59,7 @@ class ctTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: TextField(
+      child: TextFormField(
         keyboardType: isNumber ? TextInputType.number : TextInputType.name,
         decoration: InputDecoration(
           border: OutlineInputBorder(
