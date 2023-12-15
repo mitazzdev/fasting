@@ -227,7 +227,7 @@ class _MyHomePageState extends State<MyHomePage> {
               SizedBox(
                 width: double.infinity,
                 child: Card(
-                  color: Color.fromARGB(255, 174, 72, 72),
+                  color: Color.fromARGB(255, 187, 179, 113),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -475,7 +475,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementUser,
         tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.person_add_rounded),
       ),
     );
   }
