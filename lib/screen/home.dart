@@ -257,7 +257,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       User currentUser = userLists[index];
                       int makeupDay = currentUser.makeupDay;
                       int missedDay = currentUser.missedFast;
-                      double makeupPercent = makeupDay / missedDay;
+                      double makeupPercent =
+                          missedDay != 0 ? makeupDay / missedDay : 1;
                       return Slidable(
                         key: Key(currentUser.id.toString()),
                         actionPane: SlidableDrawerActionPane(),
