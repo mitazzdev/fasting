@@ -279,71 +279,150 @@ class _MyHomePageState extends State<MyHomePage> {
                       int missedDay = currentUser.missedFast;
                       double makeupPercent =
                           missedDay != 0 ? makeupDay / missedDay : 1;
+                      bool isDone = missedDay <= makeupDay ? true : false;
+
                       return Slidable(
                         key: Key(currentUser.id.toString()),
                         actionPane: SlidableDrawerActionPane(),
                         actionExtentRatio: 0.25,
                         child: Card(
-                          child: ListTile(
-                            contentPadding: EdgeInsets.all(8),
-                            title: Text(currentUser.name),
-                            subtitle: Row(
-                              children: [
-                                Expanded(
-                                  child: LinearProgressIndicator(
-                                    minHeight: 10,
-                                    borderRadius: BorderRadius.circular(10),
-                                    value: makeupPercent,
-                                    semanticsLabel: 'Linear progress indicator',
+                          child: isDone
+                              ? ListTile(
+                                  contentPadding: EdgeInsets.all(8),
+                                  title: Text(currentUser.name),
+                                  subtitle: Row(
+                                    children: [
+                                      Expanded(
+                                        child: LinearProgressIndicator(
+                                          minHeight: 10,
+                                          color: Colors.green,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          value: makeupPercent,
+                                          semanticsLabel:
+                                              'Linear progress indicator',
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 60,
+                                        child: Center(
+                                          child: Text('$makeupDay/$missedDay'),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  leading: SizedBox(
+                                    width: 70,
+                                    child: FittedBox(
+                                      child: CircleAvatar(
+                                        backgroundColor: Colors.green,
+                                        child: Icon(
+                                          Icons.done,
+                                          color: Colors.white,
+                                        ),
+                                        // minRadius: 1,
+                                      ),
+                                    ),
+                                  ),
+                                  trailing: SizedBox(
+                                    width: 100,
+                                    child: Row(
+                                      children: [
+                                        IconButton(
+                                          onPressed: () {
+                                            print('decreased');
+                                            setState(() {
+                                              if (makeupDay >= 1) {
+                                                makeupDay--;
+                                              }
+                                              _updateMakeUpDay(
+                                                  index, makeupDay);
+                                              print(makeupDay);
+                                            });
+                                          },
+                                          icon: Icon(Icons.remove),
+                                        ),
+                                        IconButton(
+                                          onPressed: () {
+                                            print('increased');
+                                            setState(() {
+                                              _updateMakeUpDay(
+                                                  index, makeupDay);
+                                              print(makeupDay);
+                                            });
+                                          },
+                                          icon: Icon(Icons.add),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              : ListTile(
+                                  contentPadding: EdgeInsets.all(8),
+                                  title: Text(currentUser.name),
+                                  subtitle: Row(
+                                    children: [
+                                      Expanded(
+                                        child: LinearProgressIndicator(
+                                          minHeight: 10,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          value: makeupPercent,
+                                          semanticsLabel:
+                                              'Linear progress indicator',
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 60,
+                                        child: Center(
+                                          child: Text('$makeupDay/$missedDay'),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  leading: SizedBox(
+                                    width: 70,
+                                    child: FittedBox(
+                                      child: CircleAvatar(
+                                        child: Text('${missedDay - makeupDay}'),
+                                        // minRadius: 1,
+                                      ),
+                                    ),
+                                  ),
+                                  trailing: SizedBox(
+                                    width: 100,
+                                    child: Row(
+                                      children: [
+                                        IconButton(
+                                          onPressed: () {
+                                            print('decreased');
+                                            setState(() {
+                                              if (makeupDay >= 1) {
+                                                makeupDay--;
+                                              }
+                                              _updateMakeUpDay(
+                                                  index, makeupDay);
+                                              print(makeupDay);
+                                            });
+                                          },
+                                          icon: Icon(Icons.remove),
+                                        ),
+                                        IconButton(
+                                          onPressed: () {
+                                            print('increased');
+                                            setState(() {
+                                              makeupDay++;
+                                              _updateMakeUpDay(
+                                                  index, makeupDay);
+                                              print(makeupDay);
+                                            });
+                                          },
+                                          icon: Icon(Icons.add),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                                SizedBox(
-                                  width: 60,
-                                  child: Center(
-                                    child: Text('$makeupDay/$missedDay'),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            leading: SizedBox(
-                              width: 70,
-                              child: FittedBox(
-                                child: CircleAvatar(
-                                  child: Text('${missedDay - makeupDay}'),
-                                  // minRadius: 1,
-                                ),
-                              ),
-                            ),
-                            trailing: SizedBox(
-                              width: 100,
-                              child: Row(
-                                children: [
-                                  IconButton(
-                                    onPressed: () {
-                                      print('decreased');
-                                      setState(() {
-                                        makeupDay--;
-                                        _updateMakeUpDay(index, makeupDay);
-                                        print(makeupDay);
-                                      });
-                                    },
-                                    icon: Icon(Icons.remove),
-                                  ),
-                                  IconButton(
-                                    onPressed: () {
-                                      print('increased');
-                                      setState(() {
-                                        makeupDay++;
-                                        _updateMakeUpDay(index, makeupDay);
-                                        print(makeupDay);
-                                      });
-                                    },
-                                    icon: Icon(Icons.add),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
                         ),
                         secondaryActions: [
                           IconSlideAction(
