@@ -101,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 // Edit functionality
-  void _editCardList(int index) async {
+  void _editUser(int index) async {
     // Get the existing user object from the list
     User existingUser = userLists[index];
 
@@ -147,7 +147,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Delete functionality
-  void _deleteCardList(int index) async {
+  void _deleteUser(int index) async {
     User userToDelete = userLists[index]; // Get the User object from the list
     int userId = userToDelete.id; // Get the actual ID from the User object
     print(userId);
@@ -194,7 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     if (confirm == true) {
-      _deleteCardList(index);
+      _deleteUser(index);
     }
   }
 
@@ -333,7 +333,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             caption: 'Edit',
                             color: Colors.blue,
                             icon: Icons.edit,
-                            onTap: () => _editCardList(index),
+                            onTap: () => _editUser(index),
                           ),
                         ],
                       );
