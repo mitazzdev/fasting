@@ -418,6 +418,30 @@ class _MyHomePageState extends State<MyHomePage> {
                                               _updateMakeUpDay(
                                                   index, makeupDay);
                                               print(makeupDay);
+
+                                              // Check if makeupDay reaches a certain condition
+                                              if (makeupDay == 10) {
+                                                // If the condition is met, show the congratulations dialog
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (context) =>
+                                                      AlertDialog(
+                                                    title:
+                                                        Text('Congratulations'),
+                                                    content: Text(
+                                                        'You have successfully completed the task!'),
+                                                    actions: <Widget>[
+                                                      TextButton(
+                                                        onPressed: () =>
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop(),
+                                                        child: Text('OK'),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              }
                                             });
                                           },
                                           icon: Icon(Icons.add),
