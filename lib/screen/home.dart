@@ -227,7 +227,7 @@ class _MyHomePageState extends State<MyHomePage> {
               SizedBox(
                 width: double.infinity,
                 child: Card(
-                  color: Color.fromARGB(255, 113, 154, 187),
+                  color: Color.fromARGB(255, 191, 120, 89),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -258,7 +258,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Container(
                   height: 500,
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 163, 215, 224),
+                    color: Color.fromARGB(255, 224, 178, 163),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: ReorderableListView.builder(
@@ -358,6 +358,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                     children: [
                                       Expanded(
                                         child: LinearProgressIndicator(
+                                          color: Color.fromARGB(
+                                              255, 193, 128, 128),
                                           minHeight: 10,
                                           borderRadius:
                                               BorderRadius.circular(10),
