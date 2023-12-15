@@ -21,10 +21,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
   List userLists = [];
   DatabaseHelper _databaseHelper = DatabaseHelper.instance;
-  late User user;
   late int nextRamdan;
 
   TextEditingController txt = TextEditingController();
