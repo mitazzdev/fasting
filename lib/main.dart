@@ -267,7 +267,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Column(
                       children: [
                         Text(
-                          'Ramdan is coming in ',
+                          'Ramadan is coming in ',
                           style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.w400,
