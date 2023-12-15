@@ -172,6 +172,11 @@ class _MyHomePageState extends State<MyHomePage> {
     _loadUsers();
   }
 
+  Future<void> _reOrderData(List<User> newUserList) async {
+    await _databaseHelper.deleteAndReinsertData(newUserList);
+    _loadUsers();
+  }
+
   Future<void> _confirmDelete(BuildContext context, int index) async {
     bool confirm = await showDialog(
       context: context,
@@ -264,6 +269,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         }
                         final User item = userLists.removeAt(oldIndex);
                         userLists.insert(newIndex, item);
+                        List<User> newUserList = userLists;
+                        _reOrderData(newUserList);
                       });
                     },
                     itemBuilder: (BuildContext context, int index) {

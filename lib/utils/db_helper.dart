@@ -88,4 +88,13 @@ class DatabaseHelper {
     Database db = await instance.database;
     return await db.delete(tableName); // tableName is the name of your table
   }
+
+  Future<void> deleteAndReinsertData(List<User> userList) async {
+    deleteAllUsers();
+
+    // Insert new data
+    for (int i = 0; i < userList.length; i++) {
+      insertUser(userList[i]);
+    }
+  }
 }

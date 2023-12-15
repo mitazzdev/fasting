@@ -27,4 +27,14 @@ class User {
   String toString() {
     return 'User{name: $name, missedFast: $missedFast, makeupDay: $makeupDay}';
   }
+
+  // Convert User object to a Map
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'missedFast': missedFast,
+      'makeupDay': makeupDay,
+    };
+  }
 }
