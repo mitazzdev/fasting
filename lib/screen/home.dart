@@ -4,7 +4,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
 
-import '../utils/db_helper.dart';
 import '../model/user.dart';
 import '../utils/widgets/custom.dart';
 
@@ -26,7 +25,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<User> userLists = [];
-  DatabaseHelper _databaseHelper = DatabaseHelper.instance;
   late int nextRamadan;
   // Firebase Firestore instance
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -111,7 +109,6 @@ class _MyHomePageState extends State<MyHomePage> {
         misseDayCtrl.text.isNotEmpty &&
         makeupDayCtrl.text.isNotEmpty) {
       User newUser = User(
-        id: generateUniqueId(),
         name: nameCtrl.text,
         makeupDay: int.parse(makeupDayCtrl.text),
         missedFast: int.parse(misseDayCtrl.text),
@@ -197,13 +194,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Delete functionality
   Future<void> _deleteUser(int index) async {
-    User userToDelete = userLists[index];
+    if (index >= 0 && index < userLists.length) {
+      User userToDelete = userLists[index];
 
-    // Delete the user from Firestore
-    await _firestore.collection('users').doc(userToDelete.id).delete();
+      // Delete the user from Firestore
+      await _firestore.collection('users').doc(userToDelete.id).delete();
 
-    // Reload the users from Firestore
-    _loadUsers();
+      // Reload the users from Firestore
+      _loadUsers();
+    }
   }
 
   Future<void> _confirmDelete(BuildContext context, int index) async {
@@ -229,6 +228,22 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (confirm == true) {
       _deleteUser(index);
+    }
+  }
+
+  Future<String?> getDocumentId(int index) async {
+    String name = userLists[index].name;
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('name', isEqualTo: name)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      // If there is a document that matches the condition, return its ID
+      return querySnapshot.docs.first.id;
+    } else {
+      // If no matching document is found, return null or handle accordingly
+      return null;
     }
   }
 
