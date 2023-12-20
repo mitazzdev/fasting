@@ -35,6 +35,13 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController misseDayCtrl = TextEditingController();
   TextEditingController makeupDayCtrl = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    nextRamadan = calNextRamdan();
+    _loadUsers();
+  }
+
   int calNextRamdan() {
     DateTime today = DateTime.now();
     DateTime nextRamdan = DateTime(2024, 3, 10);
@@ -44,6 +51,42 @@ class _MyHomePageState extends State<MyHomePage> {
 
     print('Days between today and March 10, 2024: $daysDifference days');
     return daysDifference;
+  }
+
+  Future<void> _updateMakeUpDay(int index, int makeupDay) async {
+    User existingUser = userLists[index];
+    User updatedUser = User(
+      id: existingUser.id,
+      name: existingUser.name,
+      missedFast: existingUser.missedFast,
+      makeupDay: makeupDay,
+    );
+
+    await _firestore
+        .collection('users')
+        .doc(existingUser.id)
+        .update(updatedUser.toMap());
+
+    _loadUsers();
+  }
+
+  Future<void> _reOrderData(List<User> newUserList) async {
+    await _deleteAndReinsertData(newUserList);
+    // Reload the users from Firestore
+    _loadUsers();
+  }
+
+  Future<void> _deleteAndReinsertData(List<User> userList) async {
+    // Delete all existing users
+    QuerySnapshot querySnapshot = await _firestore.collection('users').get();
+    for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+      await _firestore.collection('users').doc(doc.id).delete();
+    }
+
+    // Insert new data
+    for (int i = 0; i < userList.length; i++) {
+      await _firestore.collection('users').add(userList[i].toMap());
+    }
   }
 
   Future<void> _incrementUser() async {
@@ -156,6 +199,32 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // Reload the users from Firestore
     _loadUsers();
+  }
+
+  Future<void> _confirmDelete(BuildContext context, int index) async {
+    bool confirm = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Confirm Delete'),
+          content: Text('Are you sure you want to delete this item?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text('Delete'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
+      _deleteUser(index);
+    }
   }
 
   @override
