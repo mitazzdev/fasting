@@ -11,9 +11,9 @@ class User {
 
   factory User.fromMap(Map<String, dynamic> map) {
     return User(
-      name: map['name'] as String? ?? '',
-      missedFast: (map['missedDay'] as int?) ?? 0,
-      makeupDay: (map['makeupDay'] as int?) ?? 0,
+      name: map['name'],
+      makeupDay: map['makeupDay'],
+      missedFast: map['missedFast'],
     );
   }
 

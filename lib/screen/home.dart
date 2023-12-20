@@ -53,6 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _updateMakeUpDay(int index, int makeupDay) async {
+    String? id = await getDocumentId(index);
     User existingUser = userLists[index];
     User updatedUser = User(
       name: existingUser.name,
@@ -60,16 +61,13 @@ class _MyHomePageState extends State<MyHomePage> {
       makeupDay: makeupDay,
     );
 
-    await _firestore
-        .collection('users')
-        .doc(existingUser.id)
-        .update(updatedUser.toMap());
+    await _firestore.collection('users').doc(id).update(updatedUser.toMap());
 
     _loadUsers();
   }
 
   String generateUniqueId() {
-    final Uuid uuid = Uuid();
+    final Uuid uuid = const Uuid();
     return uuid.v4(); // Generate a version 4 (random) UUID
   }
 
@@ -104,27 +102,22 @@ class _MyHomePageState extends State<MyHomePage> {
       },
     );
 
-    // Ensure that the text fields are not empty before creating a new user
-    if (nameCtrl.text.isNotEmpty &&
-        misseDayCtrl.text.isNotEmpty &&
-        makeupDayCtrl.text.isNotEmpty) {
-      User newUser = User(
-        name: nameCtrl.text,
-        makeupDay: int.parse(makeupDayCtrl.text),
-        missedFast: int.parse(misseDayCtrl.text),
-      );
+    User newUser = User(
+      name: nameCtrl.text,
+      makeupDay: int.parse(makeupDayCtrl.text),
+      missedFast: int.parse(misseDayCtrl.text),
+    );
 
-      // Add the new user to Firestore
-      await _firestore.collection('users').add(newUser.toMap());
+    // Add the new user to Firestore
+    await _firestore.collection('users').add(newUser.toMap());
 
-      // Clear the text controllers
-      nameCtrl.clear();
-      misseDayCtrl.clear();
-      makeupDayCtrl.clear();
+    // Clear the text controllers
+    nameCtrl.clear();
+    misseDayCtrl.clear();
+    makeupDayCtrl.clear();
 
-      // Reload the users from Firestore
-      _loadUsers();
-    }
+    // Reload the users from Firestore
+    _loadUsers();
   }
 
   Future<void> _loadUsers() async {
@@ -147,6 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Edit functionality
   Future<void> _editUser(int index) async {
+    String? id = await getDocumentId(index);
     User existingUser = userLists[index];
 
     // Set the text for the text controllers
@@ -170,17 +164,13 @@ class _MyHomePageState extends State<MyHomePage> {
         misseDayCtrl.text.isNotEmpty &&
         makeupDayCtrl.text.isNotEmpty) {
       User updatedUser = User(
-        id: existingUser.id,
         name: nameCtrl.text,
         makeupDay: int.parse(makeupDayCtrl.text),
         missedFast: int.parse(misseDayCtrl.text),
       );
 
       // Update the user in Firestore
-      await _firestore
-          .collection('users')
-          .doc(existingUser.id)
-          .update(updatedUser.toMap());
+      await _firestore.collection('users').doc(id).update(updatedUser.toMap());
 
       // Clear the text controllers
       nameCtrl.clear();
@@ -194,32 +184,32 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Delete functionality
   Future<void> _deleteUser(int index) async {
-    if (index >= 0 && index < userLists.length) {
-      User userToDelete = userLists[index];
+    String? id = await getDocumentId(index);
 
-      // Delete the user from Firestore
-      await _firestore.collection('users').doc(userToDelete.id).delete();
+    // Delete the user from Firestore
+    await _firestore.collection('users').doc(id).delete();
 
-      // Reload the users from Firestore
-      _loadUsers();
-    }
+    // Reload the users from Firestore
+    _loadUsers();
   }
 
   Future<void> _confirmDelete(BuildContext context, int index) async {
+    String? id = await getDocumentId(index);
+
     bool confirm = await showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirm Delete'),
-          content: Text('Are you sure you want to delete this item?'),
+          title: const Text('Confirm Delete'),
+          content: const Text('Are you sure you want to delete this item?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: Text('Delete'),
+              child: const Text('Delete'),
             ),
           ],
         );
@@ -270,12 +260,12 @@ class _MyHomePageState extends State<MyHomePage> {
               SizedBox(
                 width: double.infinity,
                 child: Card(
-                  color: Color.fromARGB(255, 187, 179, 113),
+                  color: const Color.fromARGB(255, 187, 179, 113),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       children: [
-                        Text(
+                        const Text(
                           'Countdown to Ramadan: ',
                           style: TextStyle(
                             fontSize: 25,
@@ -285,7 +275,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         Text(
                           '$nextRamadan days',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
@@ -301,7 +291,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Container(
                   height: 500,
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 245, 224, 148),
+                    color: const Color.fromARGB(255, 245, 224, 148),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: ReorderableListView.builder(
@@ -326,13 +316,27 @@ class _MyHomePageState extends State<MyHomePage> {
                       bool isDone = missedDay <= makeupDay ? true : false;
 
                       return Slidable(
-                        key: Key(currentUser.id.toString()),
-                        actionPane: SlidableDrawerActionPane(),
+                        key: Key(currentUser.name.toString()),
+                        actionPane: const SlidableDrawerActionPane(),
                         actionExtentRatio: 0.25,
+                        secondaryActions: [
+                          IconSlideAction(
+                            caption: 'Delete',
+                            color: Colors.red,
+                            icon: Icons.delete,
+                            onTap: () => _confirmDelete(context, index),
+                          ),
+                          IconSlideAction(
+                            caption: 'Edit',
+                            color: Colors.blue,
+                            icon: Icons.edit,
+                            onTap: () => _editUser(index),
+                          ),
+                        ],
                         child: Card(
                           child: isDone
                               ? ListTile(
-                                  contentPadding: EdgeInsets.all(8),
+                                  contentPadding: const EdgeInsets.all(8),
                                   title: Text(currentUser.name),
                                   subtitle: Row(
                                     children: [
@@ -355,7 +359,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       ),
                                     ],
                                   ),
-                                  leading: SizedBox(
+                                  leading: const SizedBox(
                                     width: 70,
                                     child: FittedBox(
                                       child: CircleAvatar(
@@ -384,18 +388,18 @@ class _MyHomePageState extends State<MyHomePage> {
                                               print(makeupDay);
                                             });
                                           },
-                                          icon: Icon(Icons.remove),
+                                          icon: const Icon(Icons.remove),
                                         ),
                                         IconButton(
                                           onPressed: () {},
-                                          icon: Icon(Icons.add),
+                                          icon: const Icon(Icons.add),
                                         ),
                                       ],
                                     ),
                                   ),
                                 )
                               : ListTile(
-                                  contentPadding: EdgeInsets.all(8),
+                                  contentPadding: const EdgeInsets.all(8),
                                   title: Text(currentUser.name),
                                   subtitle: Row(
                                     children: [
@@ -422,7 +426,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                     child: FittedBox(
                                       child: CircleAvatar(
                                         backgroundColor: makeupDay == 0
-                                            ? Color.fromARGB(255, 238, 172, 167)
+                                            ? const Color.fromARGB(
+                                                255, 238, 172, 167)
                                             : null,
                                         child: Text('${missedDay - makeupDay}'),
                                         // minRadius: 1,
@@ -445,7 +450,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                               print(makeupDay);
                                             });
                                           },
-                                          icon: Icon(Icons.remove),
+                                          icon: const Icon(Icons.remove),
                                         ),
                                         IconButton(
                                           onPressed: () {
@@ -476,27 +481,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                               }
                                             });
                                           },
-                                          icon: Icon(Icons.add),
+                                          icon: const Icon(Icons.add),
                                         ),
                                       ],
                                     ),
                                   ),
                                 ),
                         ),
-                        secondaryActions: [
-                          IconSlideAction(
-                            caption: 'Delete',
-                            color: Colors.red,
-                            icon: Icons.delete,
-                            onTap: () => _confirmDelete(context, index),
-                          ),
-                          IconSlideAction(
-                            caption: 'Edit',
-                            color: Colors.blue,
-                            icon: Icons.edit,
-                            onTap: () => _editUser(index),
-                          ),
-                        ],
                       );
                     },
                   ),
