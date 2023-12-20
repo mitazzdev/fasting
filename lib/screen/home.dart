@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:uuid/uuid.dart';
 
 import '../utils/db_helper.dart';
 import '../model/user.dart';
@@ -56,7 +57,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _updateMakeUpDay(int index, int makeupDay) async {
     User existingUser = userLists[index];
     User updatedUser = User(
-      id: existingUser.id,
       name: existingUser.name,
       missedFast: existingUser.missedFast,
       makeupDay: makeupDay,
@@ -68,6 +68,11 @@ class _MyHomePageState extends State<MyHomePage> {
         .update(updatedUser.toMap());
 
     _loadUsers();
+  }
+
+  String generateUniqueId() {
+    final Uuid uuid = Uuid();
+    return uuid.v4(); // Generate a version 4 (random) UUID
   }
 
   Future<void> _reOrderData(List<User> newUserList) async {
@@ -106,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
         misseDayCtrl.text.isNotEmpty &&
         makeupDayCtrl.text.isNotEmpty) {
       User newUser = User(
-        id: 0,
+        id: generateUniqueId(),
         name: nameCtrl.text,
         makeupDay: int.parse(makeupDayCtrl.text),
         missedFast: int.parse(misseDayCtrl.text),
