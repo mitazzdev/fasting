@@ -289,7 +289,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
-                  height: 500,
+                  height: 550,
                   decoration: BoxDecoration(
                     color: const Color.fromARGB(255, 245, 224, 148),
                     borderRadius: BorderRadius.circular(10),
